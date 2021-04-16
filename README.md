@@ -14,9 +14,15 @@ OverlayPluginの表示するURLを
 ```
 https://miiidas.github.io/MidaTimer/timer_rev2.html
 ```
-に変更してください
-
-
+に変更してください。
+デフォルトの値は
+```
+text color: #EBCA1B
+text size: 64
+iconXPos: 190
+iconYPos: -190
+```
+になっています。
 
 使い方:
 [DevToolsを開く]から文字サイズ/文字色/眼のアイコンのX/Y座標が変更できるようになりました👏👏👏
