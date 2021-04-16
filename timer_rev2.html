@@ -62,14 +62,6 @@
         localStorage.setItem('iconYPos', '-190');
     }
 
-    function updateVisual() {
-        document.getElementById('encounter').style.fontSize = localStorage.getItem('text size');
-        document.getElementById('encounter').style.color = localStorage.getItem('text color');
-        document.getElementById('hide_show').style.left = localStorage.getItem('iconXPos');
-        document.getElementById('hide_show').style.top = localStorage.getItem('iconYPos');
-    }
-    setInterval(updateVisual, 100);
-
     var encounterrr = document.getElementById('encounter');
 
     // タイマー用関数、タイマーが動いているかどうかのフラグ管理
