@@ -32,4 +32,4 @@ Application->Local Storage->miiidas.github.io
 から各項目を変更してオーバーレイをリロードすると反映されます
 
 #苦情, 要望等
-Midas#0117まで　追加出来ない場合はhttps://discord.gg/cUmTNWEmfaから追加してください。
+Midas#0117まで　追加出来ない場合はhttps://discord.gg/cUmTNWEmfa から追加してください。
