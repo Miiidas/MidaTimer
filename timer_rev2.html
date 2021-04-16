@@ -1,0 +1,157 @@
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <style>
+
+    * {
+        font-family: 'Meiryo';
+        font-size: 64px;
+    }
+
+    html {
+        height: 100%;
+        overflow: hidden;
+        background-color: transparent;
+    }
+
+    #encounter {
+        color: #EBCA1B;
+        text-shadow: 1px -1px 5px #000000, 1px 1px 5px #000000, -1px 1px 5px #000000, -1px -1px 5px #000000;
+        text-align: left;
+        vertical-align: text-top;
+        height: 200px;
+        width: 400px;
+        position: static;
+        visibility: hidden;
+        font-size: 64px;
+        top: 20px;
+        left: 20px;
+    }
+
+    #hide_show {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        top: 20px;
+        left: 237px;
+    }
+    </style>
+    <script src='https://ngld.github.io/OverlayPlugin/assets/shared/common.min.js'></script>
+</head>
+
+<body>
+        <div id='encounter'>
+            00:00
+        </div>
+        <div id='hide_show' onclick='hideelements()'>
+            <img src='eye_open.png' />
+        </div>
+    <script>
+    //localstorage設定
+    if (localStorage.getItem('text size') != null) {
+        document.getElementById('encounter').style.fontSize = localStorage.getItem('text size');
+        document.getElementById('encounter').style.color = localStorage.getItem('text color');
+        document.getElementById('encounter').style.left = localStorage.getItem('iconXPos');
+        document.getElementById('hide_show').style.top = localStorage.getItem('iconYPos');
+    } else {
+        localStorage.setItem('text size', '64');
+        localStorage.setItem('text color', '#EBCA1B');
+        localStorage.setItem('iconXPos', '190');
+        localStorage.setItem('iconYPos', '-190');
+    }
+
+    function updateVisual() {
+        document.getElementById('encounter').style.fontSize = localStorage.getItem('text size');
+        document.getElementById('encounter').style.color = localStorage.getItem('text color');
+        document.getElementById('hide_show').style.left = localStorage.getItem('iconXPos');
+        document.getElementById('hide_show').style.top = localStorage.getItem('iconYPos');
+    }
+    setInterval(updateVisual, 100);
+
+    var encounterrr = document.getElementById('encounter');
+
+    // タイマー用関数、タイマーが動いているかどうかのフラグ管理
+    var timeA = 0;
+    var timeB = 0;
+    var textA = '00';
+    var textB = '00';
+    var timeRes = 0;
+    var timeRaw = 0;
+    var currentTime = '00:00';
+    var isTimerActive = false;
+
+    //
+    // 以下表示用スクリプト
+    //
+
+    // LogLine イベントを購読
+    addOverlayListener('LogLine', (e) => update(e));
+    startOverlayEvents();
+
+    // 表示要素の更新
+    function update(data) {
+        if (JSON.stringify(data).search('0039..戦闘開始！') !== -1) { //戦闘開始
+            timeRaw = 0;
+            currentTime = '00:00';
+            isTimerActive = true;
+        } else if (JSON.stringify(data).search('/\|40000010\|/') !== -1) { //ワイプ(1)
+            isTimerActive = false;
+        } else if (JSON.stringify(data).search('/\|40000005\|/') !== -1) { //ワイプ(2)
+            isTimerActive = false;
+        } else if (JSON.stringify(data).search('/\|40000003\|/') !== -1) { //勝利(?)
+            isTimerActive = false;
+        } else if (JSON.stringify(data).search('がレディチェックを開始しました。') !== -1) { //レディチェック
+            isTimerActive = false;
+        } else {
+
+        }
+
+        //開始/終了時に可視性を切り替え
+        if (JSON.stringify(data).search('」の攻略を開始した。') !== -1) {
+            encounterrr.style.visibility = 'visible';
+        } else if (JSON.stringify(data).search('」の攻略を終了した。') !== -1) {
+            encounterrr.style.visibility = 'hidden';
+        }
+    }
+
+    function updateTimer() {
+        timeRaw = timeRaw + 0.1; //タイマー+0.1
+        timeRes = Math.floor(timeRaw); //小数点切り捨てた結果をtimeResに
+        timeA = timeRes % 60 //秒数を求める
+        timeB = Math.floor(timeRes / 60); //分を求める
+        if (timeA <= 9) { //9以下の場合0+数字にする
+            textA = '0' + timeA;
+        } else {
+            textA = timeA;
+        }
+
+        if (timeB <= 9) {
+            textB = '0' + timeB;
+        } else {
+            textB = timeB;
+        }
+        if (isTimerActive == true) { //タイマーがアクティブな場合のみ更新
+            currentTime = textB + ':' + textA;
+            document.getElementById('encounter').innerText = currentTime;
+        }
+    }
+
+    setInterval(updateTimer, 100);
+
+    function hideelements() {
+        var togglebutton = document.getElementById('hide_show');
+        if (encounterrr.style.visibility == 'visible') { //隠す処理
+            encounterrr.style.visibility = 'hidden';
+            togglebutton.setAttribute('src', 'eye_open.png');
+        } else { //出す処理
+            encounterrr.style.visibility = 'visible';
+            togglebutton.setAttribute('src', 'eye_close.png');
+        }
+    }
+    
+    </script>
+</body>
+
+</html>
