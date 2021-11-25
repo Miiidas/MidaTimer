@@ -39,6 +39,18 @@
     }
     </style>
     <script src='https://ngld.github.io/OverlayPlugin/assets/shared/common.min.js'></script>
+    <script>
+            function hideelements() {
+        var togglebutton = document.getElementById('hide_show');
+        if (encounterrr.style.visibility == 'visible') { //隠す処理
+            encounterrr.style.visibility = 'hidden';
+            togglebutton.setAttribute('src', 'eye_open.png');
+        } else { //出す処理
+            encounterrr.style.visibility = 'visible';
+            togglebutton.setAttribute('src', 'eye_close.png');
+        }
+    }
+    </script>
 </head>
 
 <body>
@@ -71,8 +83,12 @@
     var textB = '00';
     var timeRes = 0;
     var timeRaw = 0;
+    var counttime = 0;
+    var countptime = 0;
+    var countetime = '-21.0';
     var currentTime = '00:00';
     var isTimerActive = false;
+    var isCountActive = false;
 
     //
     // 以下表示用スクリプト
@@ -83,21 +99,41 @@
     startOverlayEvents();
 
     // 表示要素の更新
-    function update(data) {
+    function update(data) {//暇な時にifからswitchに変えて頭を良く見せましょう
         if (JSON.stringify(data).search('0039..戦闘開始！') !== -1) { //戦闘開始
             timeRaw = 0;
             currentTime = '00:00';
             isTimerActive = true;
+            isCountActive = false;
         } else if (JSON.stringify(data).search('/\|40000010\|/') !== -1) { //ワイプ(1)
             isTimerActive = false;
+            isCountActive = false;
         } else if (JSON.stringify(data).search('/\|40000005\|/') !== -1) { //ワイプ(2)
             isTimerActive = false;
+            isCountActive = false;
         } else if (JSON.stringify(data).search('/\|40000003\|/') !== -1) { //勝利(?)
             isTimerActive = false;
+            isCountActive = false;
         } else if (JSON.stringify(data).search('がレディチェックを開始しました。') !== -1) { //レディチェック
             isTimerActive = false;
-        } else {
+            isCountActive = false;
+        } else if (JSON.stringify(data).search(/戦闘開始まで[5-9]|[1-3][0-9]秒！/) !== -1){//カウント開始時
+            isTimerActive = false;
+            countptime = JSON.stringify(data);
+            if(countptime.substr(countptime.indexOf('\|\|戦闘開始まで') + 12,1) == '（'){//カウント1桁
+                counttime = countptime.substr(countptime.indexOf('\|\|戦闘開始まで') + 8, 2).replace(/[^0-9]/g, '');
+                console.log('pat12:' + counttime);
+            }else if(countptime.substr(countptime.indexOf('\|\|戦闘開始まで') + 13,1) == '（'){//カウント2桁
+                counttime = countptime.substr(countptime.indexOf('\|\|戦闘開始まで') + 8, 2).replace(/[^0-9]/g, '');
+                console.log('pat13:' + counttime);
+            }
 
+            
+            isCountActive = true;
+        } else if (JSON.stringify(data).search('により、戦闘開始カウントがキャンセルされました。') !== -1){//カウントキャンセル時
+            isTimerActive = false;
+            isCountActive = false;
+            currentTime = '00:00';
         }
 
         //開始/終了時に可視性を切り替え
@@ -128,21 +164,17 @@
             currentTime = textB + ':' + textA;
             document.getElementById('encounter').innerText = currentTime;
         }
+        if (isCountActive == true ) { //カウント中の場合
+            counttime = counttime - 0.1;
+            counttime = counttime.toFixed(1);
+            countetime = '-' + counttime;
+            
+            document.getElementById('encounter').innerText = countetime;
+        }
     }
 
     setInterval(updateTimer, 100);
 
-    function hideelements() {
-        var togglebutton = document.getElementById('hide_show');
-        if (encounterrr.style.visibility == 'visible') { //隠す処理
-            encounterrr.style.visibility = 'hidden';
-            togglebutton.setAttribute('src', 'eye_open.png');
-        } else { //出す処理
-            encounterrr.style.visibility = 'visible';
-            togglebutton.setAttribute('src', 'eye_close.png');
-        }
-    }
-    
     encounter.oncontextmenu = function() {
         window.open('https://github.com/Miiidas/MidaTimer');
         return false;
