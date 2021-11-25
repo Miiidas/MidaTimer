@@ -164,12 +164,15 @@
             currentTime = textB + ':' + textA;
             document.getElementById('encounter').innerText = currentTime;
         }
-        if (isCountActive == true ) { //カウント中の場合
+        if (isCountActive == true) { //カウント中の場合
+            if(counttime > 0) {
             counttime = counttime - 0.1;
             counttime = counttime.toFixed(1);
             countetime = '-' + counttime;
-            
             document.getElementById('encounter').innerText = countetime;
+            }else{
+                document.getElementById('encounter').innerText = '00;00';
+            }
         }
     }
 
