@@ -33,4 +33,4 @@ ngld/OverlayPlugin以外のOverlayPluginでは動作しません　よろしく�
 https://github.com/ngld/OverlayPlugin/releases/
 
 ## 苦情, 要望等
-Discord:Midas#1337まで
+Discord:Midas#0005まで
